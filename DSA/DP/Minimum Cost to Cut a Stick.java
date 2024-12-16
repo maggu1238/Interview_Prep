@@ -53,3 +53,43 @@ class Solution {
         return findValue(1,c,list, dp);
     }
 }
+
+
+// Tabulation
+
+public int minCost(int n, int[] cuts) {
+        int c = cuts.length;
+
+        List<Integer> list = new ArrayList<>();
+        for(int it : cuts){
+            list.add(it);
+        }
+        list.add(n);
+        list.add(0);
+
+        Collections.sort(list);
+
+        
+        int[][] dp = new int[c+2][c+2];
+        // In recursion i goes from 1 -> c
+        // j goes from c -> 1
+
+        // so in tabulation i goes from c -> 1 and j goes from 1 -> c
+        for (int i = c; i >=1; i--) {
+            for (int j = 1; j <= c; j++){
+               if(i > j)
+                    dp[i][j] = 0;
+                else{
+                    int sum = 0;
+                    int mini = Integer.MAX_VALUE;
+                    for( int ind = i; ind <= j; ind++){
+                        sum = dp[i][ind - 1] + dp[ind + 1][j] + (list.get(j+1) - list.get(i-1));
+                        mini = Math.min(mini, sum);
+                    }
+                    dp[i][j] = mini;   
+                }
+            }
+        }
+
+        return dp[1][c];
+    }
