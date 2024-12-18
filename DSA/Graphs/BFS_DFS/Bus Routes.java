@@ -4,41 +4,54 @@ For example, if routes[0] = [1, 5, 7], this means that the 0th bus travels in th
 You will start at the bus stop source (You are not on any bus initially), and you want to go to the bus stop target. You can travel between bus stops by buses only.
 
 Return the least number of buses you must take to travel from source to target. Return -1 if it is not possible.*/
-int MinimumBuses(vector<vector<int>>& routes, int src, int dest) {
-    unordered_map<int, vector<int>> adjList;
-    for (int i = 0; i < routes.size(); i++) {
-        for (int station : routes[i]) {
-            if (adjList.find(station) == adjList.end()) {
-                adjList[station] = vector<int>();
+
+import java.util.*;
+
+class Solution {
+    public int minimumBuses(int[][] routes, int src, int dest) {
+        // Map to store which buses pass through each station
+        Map<Integer, List<Integer>> adjList = new HashMap<>();
+        for (int i = 0; i < routes.length; i++) {
+            for (int station : routes[i]) {
+                adjList.putIfAbsent(station, new ArrayList<>());
+                adjList.get(station).add(i);
             }
-            adjList[station].push_back(i);
-        }
-    }
-
-    deque<pair<int, int>> queue;
-    queue.push_back({src, 0});
-    unordered_set<int> visitedBuses;
-
-    while (!queue.empty()) {
-        int station = queue.front().first;
-        int busesTaken = queue.front().second;
-        queue.pop_front();
-
-        if (station == dest) {
-            return busesTaken;
         }
 
-        if (adjList.find(station) != adjList.end()) {
-            for (int bus : adjList[station]) {
-                if (visitedBuses.find(bus) == visitedBuses.end()) {
-                    for (int s : routes[bus]) {
-                        queue.push_back({s, busesTaken + 1});
+        // Queue for BFS: stores the current station and buses taken so far
+        Deque<int[]> queue = new ArrayDeque<>();
+        queue.offer(new int[]{src, 0});
+
+        // Set to track visited buses
+        Set<Integer> visitedBuses = new HashSet<>();
+
+        // BFS
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int station = current[0];
+            int busesTaken = current[1];
+
+            // If we reach the destination, return the number of buses taken
+            if (station == dest) {
+                return busesTaken;
+            }
+
+            // Check the buses passing through this station
+            if (adjList.containsKey(station)) {
+                for (int bus : adjList.get(station)) {
+                    if (!visitedBuses.contains(bus)) {
+                        // Add all stations of this bus route to the queue
+                        for (int nextStation : routes[bus]) {
+                            queue.offer(new int[]{nextStation, busesTaken + 1});
+                        }
+                        // Mark the bus as visited
+                        visitedBuses.add(bus);
                     }
-                    visitedBuses.insert(bus);
                 }
             }
         }
-    }
 
-    return -1;
+        // If destination is unreachable, return -1
+        return -1;
+    }
 }

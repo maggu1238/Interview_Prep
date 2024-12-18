@@ -7,56 +7,62 @@ Every minute, any fresh orange that is 4-directionally adjacent to a rotten oran
 
 Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.*/
 
+import java.util.*;
 
 class Solution {
-public:
-    int orangesRotting(vector<vector<int>>& grid) {
-        queue<pair<int,int>> q;
+    public int orangesRotting(int[][] grid) {
+        Queue<int[]> q = new LinkedList<>();
         int freshOranges = 0;
-        for(int i =0;i < grid.size(); i++){
-            for(int j =0; j < grid[0].size(); j++){
-                if( grid[i][j] == 2){
-                    q.push(std::make_pair(i,j));
+        
+        // Initialize the queue with rotten oranges and count fresh oranges
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 2) {
+                    q.offer(new int[]{i, j});
                 }
-                if(grid[i][j] == 1){
+                if (grid[i][j] == 1) {
                     freshOranges++;
                 }
             }
         }
+        
+        // Directions for moving up, down, left, right
+        int[] x = {0, 0, 1, -1};
+        int[] y = {1, -1, 0, 0};
+        
+        int steps = 0;
         int size = q.size();
-
-        int x[4] = {0,0,1,-1};
-        int y[4] = {1,-1,0,0};
-        int steps = 0; 
-
-        while(!q.empty()){
-            pair<int,int> p = q.front();
-           // cout<<p.first<<" "<<p.second<<"\n";
-
-            q.pop();
+        
+        // BFS to spread the rot
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
             size--;
-
-            for( int i = 0; i < 4; i++){
-                int newX = p.first + x[i];
-                int newY = p.second + y[i];
-
-                if(newX >= 0 && newX < grid.size() && newY >= 0 && newY < grid[0].size() 
-                && grid[newX][newY] == 1){
+            
+            for (int i = 0; i < 4; i++) {
+                int newX = p[0] + x[i];
+                int newY = p[1] + y[i];
+                
+                // If the new position is within bounds and is a fresh orange
+                if (newX >= 0 && newX < grid.length && newY >= 0 && newY < grid[0].length 
+                    && grid[newX][newY] == 1) {
                     freshOranges--;
                     grid[newX][newY] = 2;
-                   // cout<<grid[newX][newY]<<"\n";
-                    q.push(std::make_pair(newX,newY));
+                    q.offer(new int[]{newX, newY});
                 }
             }
-
-            if(size == 0 && q.size() != 0){
+            
+            // If we've processed one level of BFS and there are still elements in the queue
+            if (size == 0 && !q.isEmpty()) {
                 steps++;
                 size = q.size();
             }
         }
-        if(freshOranges > 0)
+        
+        // If there are still fresh oranges left
+        if (freshOranges > 0) {
             return -1;
-
+        }
+        
         return steps;
     }
-};
+}

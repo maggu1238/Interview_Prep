@@ -4,45 +4,42 @@ The person who owns these tickets always starts their journey from "JFK". Theref
 
  You may assume all tickets form at least one valid itinerary. You must use all the tickets exactly once.*/
 
- class Solution {
-public:
-    void dfs(string node, vector<string>& res, map<string, vector<string>>& adjList)
-    {   
-     // cout<<node<<" ";
-       while(adjList[node].size())
-       {
-           string neighbour = *adjList[node].begin();
-           adjList[node].erase( adjList[node].begin() );
-           dfs(neighbour, res, adjList);
-           
-       }
-       res.push_back(node);
-       return;
+ 
+
+import java.util.*;
+
+class Solution {
+    private void dfs(String node, List<String> res, Map<String, List<String>> adjList) {
+        while (adjList.containsKey(node) && !adjList.get(node).isEmpty()) {
+            // Remove the first destination (smallest lexicographically due to sorting)
+            String neighbour = adjList.get(node).remove(0);
+            dfs(neighbour, res, adjList);
+        }
+        res.add(node);
     }
-    vector<string> findItinerary(vector<vector<string>>& tickets) {
-        vector<string > res;
-        
-        map< string, vector<string>> adjList;
-        map< string, bool> visited;
-        int N = tickets.size();
-        for(int i = 0; i < tickets.size(); i++)
-        {
-            vector<string> ticket = tickets[i];
-            string src = ticket[0];
-            string dst = ticket[1];
-            
-            adjList[src].push_back(dst);
-            
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        List<String> res = new ArrayList<>();
+        Map<String, List<String>> adjList = new HashMap<>();
+
+        // Build adjacency list
+        for (List<String> ticket : tickets) {
+            String src = ticket.get(0);
+            String dst = ticket.get(1);
+            adjList.putIfAbsent(src, new ArrayList<>());
+            adjList.get(src).add(dst);
         }
 
-        for(auto& entry : adjList){
-
-            std::sort(entry.second.begin(), entry.second.end());
+        // Sort the destinations for each source to ensure lexicographical order
+        for (List<String> destinations : adjList.values()) {
+            Collections.sort(destinations);
         }
-        
-        dfs("JFK", res, adjList) ;
-        
-        reverse( res.begin(), res.end() );
+
+        // Perform DFS starting from "JFK"
+        dfs("JFK", res, adjList);
+
+        // Reverse the result to get the correct itinerary order
+        Collections.reverse(res);
         return res;
     }
-};
+}

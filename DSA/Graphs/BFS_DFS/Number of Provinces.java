@@ -6,55 +6,52 @@ You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith
 
 Return the total number of provinces.*/
 
-class Solution {
-public:
+import java.util.*;
 
-    void dfs(int node, vector<int>& visited, vector<vector<int>>& isConnected){
-        if( visited[node] == 1){
+class Solution {
+    // DFS Function
+    private void dfs(int node, int[] visited, int[][] isConnected) {
+        if (visited[node] == 1) {
             return;
         }
-
         visited[node] = 1;
-        for( int i = 0; i < isConnected[node].size(); i++){
-            if( isConnected[node][i] == 1 && node != i){
+        for (int i = 0; i < isConnected[node].length; i++) {
+            if (isConnected[node][i] == 1 && node != i) {
                 dfs(i, visited, isConnected);
             }
         }
     }
 
-    void bfs(int node, vector<int>& visited, vector<vector<int>> isConnected){
-        queue<int> q;
-        q.push(node);
+    // BFS Function
+    private void bfs(int node, int[] visited, int[][] isConnected) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(node);
 
-        while(!q.empty()){
-            int node1 = q.front();
-            visited[node1] = 1;
-            q.pop();
-            for( int i = 0; i < isConnected[node1].size() ; i++){
-                if( isConnected[node1][i] == 1 && i != node1 && visited[i] == 0){
-                    q.push(i);
-                    ////cout<<i <<" ";
+        while (!queue.isEmpty()) {
+            int currentNode = queue.poll();
+            visited[currentNode] = 1;
+
+            for (int i = 0; i < isConnected[currentNode].length; i++) {
+                if (isConnected[currentNode][i] == 1 && i != currentNode && visited[i] == 0) {
+                    queue.offer(i);
                 }
             }
-            //cout<<"\n";
         }
-        return ;
     }
 
+    // Function to find the number of provinces
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+        int[] visited = new int[n];
+        int provinces = 0;
 
-    int findCircleNum(vector<vector<int>>& isConnected) {
-        int n = isConnected.size();
-
-        vector<int> visited(n,0);
-        int provinces =0;
-
-        for( int i = 0; i <n ; i++){
-            if(visited[i] == 0){
-                provinces++;               
-                bfs(i, visited, isConnected);
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                provinces++;
+                bfs(i, visited, isConnected); // You can switch to dfs(i, visited, isConnected) here
             }
         }
 
         return provinces;
     }
-};
+}
