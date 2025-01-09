@@ -22,10 +22,12 @@ public class Tweet {
 
 
     public void comment(String threadId, Comment c) {
-
         commentThreads.putIfAbsent(threadId, new CommentThread(threadId));
         commentThreads.get(threadId).addComments(c);
+    }
 
+    public String getContent(){
+        return content;
     }
 
     public boolean isBefore(Tweet otherTweet) {

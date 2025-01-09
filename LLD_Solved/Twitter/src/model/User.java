@@ -3,14 +3,16 @@ package model;
 import strategies.TimelineStrategy;
 import java.util.*;
 
-class User implements Follower{
+public class User{
     private String name;
+    private String id;
     private List<String> posts; // Posts by the user
     private TimelineStrategy timelineStrategy; // Strategy for generating timeline
     private List<User> following; // Users this user follows
     private List<Follower> followers; // Followers observing this user
 
-    public User(String name, TimelineStrategy timelineStrategy) {
+    public User(String id, String name, TimelineStrategy timelineStrategy) {
+        this.id = id;
         this.name = name;
         this.posts = new ArrayList<>();
         this.timelineStrategy = timelineStrategy;
@@ -30,7 +32,7 @@ class User implements Follower{
     // Notify all followers of a new tweet
     private void notifyFollowers(String tweet) {
         for (Follower follower : followers) {
-            follower.update(tweet, name);
+            follower.notifyTweet(tweet, name);
         }
     }
 
@@ -50,7 +52,7 @@ class User implements Follower{
 
     // Observer's update method for tweets
     @Override
-    public void update(String tweet, String userName) {
+    public void notifyTweet(String tweet, String userName) {
         System.out.println("[" + name + "] " + userName + " tweeted: " + tweet);
     }
 
@@ -58,6 +60,10 @@ class User implements Follower{
     @Override
     public void notifyFollow(String followerName) {
         System.out.println("[" + name + "] You are now followed by " + followerName + "!");
+    }
+
+    public String getId(){
+        return id;
     }
 
     public String getName() {
