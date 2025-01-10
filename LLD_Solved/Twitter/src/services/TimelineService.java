@@ -9,8 +9,7 @@ import java.util.List;
 public class TimelineService {
     private TimelineStrategy timelineStrategy;
 
-    public TimelineService(TimelineStrategy timelineStrategy) {
-        this.timelineStrategy = timelineStrategy;
+    public TimelineService() {
     }
 
     public List<Tweet> getTimeline(User user) {

@@ -1,14 +1,18 @@
 package services;
 
-package services;
+import strategies.TimelineStrategy;
+
+import java.util.List;package services;
 
 public class UserService {
-    private TweetService tweetService;
-    private FollowService followService;
-    private CommentService commentService;
+    private NotificationService notificationService;
+    private TimelineService timelineService;
+    private TweetSearchService tweetSearchService;
 
     public UserService() {
-
+            this.notificationService = new NotificationService();
+            this.timelineService = new TimelineService();
+        this.tweetSearchService = new  TweetSearchService();
     }
 
     // Method for a user to post a tweet
@@ -51,7 +55,12 @@ public class UserService {
         // Optionally, we can store the comment in some database or list (not implemented here)
     }
 
+    public List<String> getTimeline(List<String> followedPosts) {
+        return timelineStrategy.createTimeline(followedPosts);
+    }
 
-
+    public void setTimelineStrategy(TimelineStrategy strategy) {
+        this.timelineStrategy = strategy;
+    }
 
 }
