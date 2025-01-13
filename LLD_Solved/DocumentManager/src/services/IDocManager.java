@@ -6,8 +6,8 @@ import model.User.RegisteredUser;
 
 
 public interface IDocManager {
-    void createDoc(RegisteredUser user, Document document);
-    Document viewDoc(RegisteredUser user, Document document);
-    void editDoc(RegisteredUser user, Document document, Content content);
-    void restoreToPrevVersion(RegisteredUser user, Document document, String versionId);
+    void createDoc(RegisteredUser user, String documentId);
+    Document viewDoc(RegisteredUser user, String documentId);
+    void editDoc(RegisteredUser user, String documentId, Content content);
+    void restoreToPrevVersion(RegisteredUser user, String documentId, String versionId);
 }

@@ -10,5 +10,9 @@ public class Document {
         this.docId = docId;
         this.createdBy = createdBy;
     }
+
+    public RegisteredUser getCreatedBy() {
+        return createdBy;
+    }
 }
 
