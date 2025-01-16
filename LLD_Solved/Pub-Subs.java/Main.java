@@ -1,6 +1,8 @@
 import data.*;
 import model.*;
 
+// https://github.com/anomaly2104/low-level-design-messaging-queue-pub-sub
+
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         final Queue queue = new Queue();
