@@ -6,40 +6,41 @@ import model.*;
 public class SubscriberWorker implements Runnable {
 
     private final Topic topic;
-    private final SleepingSubscriber topicSubscriber;
+    private final SleepingSubscriber sleepingSubscriber;
 
-    public SubscriberWorker(Topic topic, SleepingSubscriber topicSubscriber) {
+    public SubscriberWorker(Topic topic, SleepingSubscriber sleepingSubscriber) {
         this.topic = topic;
-        this.topicSubscriber = topicSubscriber;
+        this.sleepingSubscriber = sleepingSubscriber;
     }
 
     @Override
     public void run() {
-        synchronized (topicSubscriber) {
+        synchronized (sleepingSubscriber) {
             do {
-                int curOffset = topicSubscriber.getOffset().get();
+                int curOffset = sleepingSubscriber.getOffset().get();
                 while (curOffset >= topic.getMessages().size()) {
-                    topicSubscriber.wait();
+                    try {
+                        sleepingSubscriber.wait();
+                    } catch (InterruptedException ex) {
+                    }
                 }
                 Message message = topic.getMessages().get(curOffset);
                 try {
-                    topicSubscriber.consumeMessage(message);
+                    sleepingSubscriber.consumeMessage(message);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 
                 // We cannot just increment here since subscriber offset can be reset while it is consuming. So, after
                 // consuming we need to increase only if it was previous one.
-                topicSubscriber.getOffset().compareAndSet(curOffset, curOffset + 1);
+                sleepingSubscriber.getOffset().compareAndSet(curOffset, curOffset + 1);
             } while (true);
         }
     }
 
     synchronized public void wakeUpIfNeeded() {
-        synchronized (topicSubscriber) {
-            topicSubscriber.notify();
+        synchronized (sleepingSubscriber) {
+            sleepingSubscriber.notify();
         }
     }
-
-
 }

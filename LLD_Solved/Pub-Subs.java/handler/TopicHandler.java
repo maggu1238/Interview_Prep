@@ -14,8 +14,8 @@ public class TopicHandler {
     }
 
     public void publish() {
-        for (SleepingSubscriber topicSubscriber:topic.getSubscribers()) {
-            startSubsriberWorker(topicSubscriber);
+        for (SleepingSubscriber sleepingSubscriber:topic.getSubscribers()) {
+            startSubsriberWorker(sleepingSubscriber);
         }
     }
 
@@ -23,10 +23,10 @@ public class TopicHandler {
         return topic;
     }
 
-    public void startSubsriberWorker(SleepingSubscriber topicSubscriber) {
-        final String subscriberId = topicSubscriber.getId();
+    public void startSubsriberWorker(SleepingSubscriber sleepingSubscriber) {
+        final String subscriberId = sleepingSubscriber.getId();
         if (!subscriberWorkers.containsKey(subscriberId)) {
-            final SubscriberWorker subscriberWorker = new SubscriberWorker(topic, topicSubscriber);
+            final SubscriberWorker subscriberWorker = new SubscriberWorker(topic, sleepingSubscriber);
             subscriberWorkers.put(subscriberId, subscriberWorker);
             new Thread(subscriberWorker).start();
         }
