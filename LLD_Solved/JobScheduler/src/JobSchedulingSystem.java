@@ -1,13 +1,11 @@
-import Strategies.SchedulingStrategy;
 import enums.StrategyType;
 import factories.StrategyFactory;
-import services.ClusterManager;
-import model.Job;
-import services.JobScheduler;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.PriorityBlockingQueue;
+import model.Job;
+import services.ClusterManager;
+import services.JobScheduler;
 
 public class JobSchedulingSystem {
     private ClusterManager clusterManager;
@@ -15,16 +13,16 @@ public class JobSchedulingSystem {
     private PriorityBlockingQueue<Job> jobQueue;
     private StrategyFactory strategyFactory;
 
-    private JobSchedulingSystem(StrategyType strategy) {
+    private JobSchedulingSystem(StrategyType strategyType) {
 
         this.clusterManager = new ClusterManager();
         this.strategyFactory = new StrategyFactory();
 
-        this.jobScheduler  = new JobScheduler(this.clusterManager, strategyFactory.createStrategy(this.clusterManager, strategy));
+        this.jobScheduler  = new JobScheduler(this.clusterManager, strategyFactory.createStrategy(this.clusterManager, strategyType));
     }
 
-    public static JobSchedulingSystem createJobSchedulingSystem(StrategyType strategy) {
-        return new JobSchedulingSystem(strategy);
+    public static JobSchedulingSystem createJobSchedulingSystem(StrategyType strategyType) {
+        return new JobSchedulingSystem(strategyType);
     }
 
     public Job createJob(int cpu, int ram, int executionTime, int priority, String id){

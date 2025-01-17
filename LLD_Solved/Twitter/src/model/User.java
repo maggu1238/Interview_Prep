@@ -3,7 +3,7 @@ package model;
 import strategies.TimelineStrategy;
 import java.util.*;
 
-public class User{
+public class User implements observer{
     private String name;
     private String id;
     private List<String> posts; // Posts by the user
@@ -37,5 +37,15 @@ public class User{
 
     public List<String> getPosts() {
         return posts;
+    }
+
+    @Override
+    public void postUpdate(User user) {
+        System.out.println("post made by user");
+    }
+
+    @Override
+    public void followUpdate(User user) {
+        System.out.println("suer followed you");
     }
 }

@@ -8,42 +8,66 @@ public class Tweet {
 
     private String tweetId;
 
-    private User user;
+    private String user;
 
     private LocalDateTime tweetTime;
 
-    private String content;
+    private Content content;
 
-    private List<String> hashtags;
+    private List<String> likedUsers;
 
-    private List<String> taggedUsers;
+    private Map<String, CommentThread> commentThreads;
 
-    private Map<String, CommentThread> commentThreads = new HashMap<String, CommentThread>();
+    private int likesCount;
 
+    public Tweet(Content content, String user){
+        commentThreads = new HashMap<>();
+        this.likedUsers = new ArrayList<>();
+        this.content = content;
+        this.user = user;
+        this.likesCount = 0;
+    }
+
+    public void likeTweet(String userId){
+        likedUsers.add(userId);
+        likesCount++;
+        return;
+    }
+
+    public void dislikeTweet(String userId){
+        likedUsers.removeIf(str -> str.equals(userId));
+        likesCount--;
+    }
 
     public void comment(String threadId, Comment c) {
         commentThreads.putIfAbsent(threadId, new CommentThread(threadId));
         commentThreads.get(threadId).addComments(c);
     }
 
-    public String getContent(){
+    public Content getContent(){
+
         return content;
     }
 
     public boolean isBefore(Tweet otherTweet) {
+
         return this.tweetTime.isBefore(otherTweet.tweetTime) ? true : false;
     }
 
-    public String describe() {
-        StringBuilder br = new StringBuilder();
-        br.append(user.userId() + Constants.LINE_BREAK);
-        br.append("Tweeted At : " + tweetTime + Constants.LINE_BREAK);
-        br.append(content + Constants.LINE_BREAK);
-        br.append(hashtags + Constants.LINE_BREAK);
-        br.append(taggedUsers + Constants.LINE_BREAK);
-        br.append(commentThreads.values());
-        return br.toString();
+    public int getLikesCount() {
+        return likesCount;
     }
+
+//    public String describe() {
+//        StringBuilder br = new StringBuilder();
+//        br.append(user.userId() + Constants.LINE_BREAK);
+//        br.append("Tweeted At : " + tweetTime + Constants.LINE_BREAK);
+//        br.append(content + Constants.LINE_BREAK);
+//        br.append(hashtags + Constants.LINE_BREAK);
+//        br.append(taggedUsers + Constants.LINE_BREAK);
+//        br.append(commentThreads.values());
+//        return br.toString();
+//    }
 
 
 

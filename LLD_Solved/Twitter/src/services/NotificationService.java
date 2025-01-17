@@ -1,26 +1,23 @@
 package services;
 
+import model.Tweet;
+import model.User;
+
+import java.util.List;
+
 public class NotificationService {
 
-    // Notify Followers about a New Tweet
-    public void notifyTweetFollowers(User user, String content) {
-        System.out.println("[Tweet Notification] " + user.getName() + ": " + content);
-        // Notify each follower (iterate through user.getFollowers())
-    }
 
     // Notify Followed User about a New Follower
     public void notifyFollowedUser(User followee, User follower) {
-        System.out.println("[Follow Notification] " + followee.getName() + ": " + follower.getName() + " followed you.");
+        followee.followUpdate(follower);
     }
 
-    // Notify the Follower about Successful Follow
-    public void notifyFollowee(User follower, User followee) {
-        System.out.println("[Follow Notification] " + follower.getName() + ": You are now following " + followee.getName());
-    }
-
-    // Notify Tweet Owner about a Comment
-    public void notifyTweetOwner(User tweetOwner, User commenter, Tweet tweet) {
-        System.out.println("[Comment Notification] " + tweetOwner.getName() + ": " + commenter.getName() + " commented on your tweet: " + tweet.getContent());
+    // Notify Followers about a New Tweet
+    public void notifyTweetFollowers(User user1, Tweet content, List<User> followers) {
+        for (User user : followers) {
+            user.postUpdate(user1);
+        }
     }
 
     // Notify Commenter about Their Comment

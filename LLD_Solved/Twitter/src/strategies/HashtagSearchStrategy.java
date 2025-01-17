@@ -11,7 +11,7 @@ public class HashtagSearchStrategy implements SearchStrategy {
     public List<Tweet> search(List<Tweet> tweets, String hashtag) {
         List<Tweet> result = new ArrayList<>();
         for (Tweet tweet : tweets) {
-            if (tweet.getHashtags().contains(hashtag.toLowerCase())) {
+            if (tweet.getContent().getHashtags().contains(hashtag.toLowerCase())) {
                 result.add(tweet);
             }
         }
