@@ -1,8 +1,7 @@
 package handler;
-import interfaces.ISubscriber;
-import model.*;
-import java.util.*;
 import data.*;
+import java.util.*;
+import model.*;
 
 public class TopicHandler {
     private final Topic topic;
