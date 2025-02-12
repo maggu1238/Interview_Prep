@@ -1,0 +1,95 @@
+/**
+ * Given an m x n board of characters and a list of strings words, return all words on the board.
+
+Each word must be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+ */
+
+
+struct TrieNode {
+        unordered_map<char, TrieNode*> children;
+        bool isWord = false;
+};
+
+class Trie {
+    public:
+    TrieNode* root;
+    Trie(){
+        this->root = new TrieNode();
+    }
+
+    void addWord(string word){
+        TrieNode* tempRoot = root;
+
+        for( char ch : word){
+            if(tempRoot -> children.find(ch) == tempRoot -> children.end()){
+                TrieNode* trieNode = new TrieNode();
+                tempRoot -> children[ch] = trieNode;
+            }
+            tempRoot = tempRoot->children[ch];
+        }
+        tempRoot->isWord = true;
+    }
+
+
+};
+
+class Solution {
+public:
+    //function to add word in Trie
+    
+
+    void dfs(int x, int y, TrieNode* root, vector<string>& res, string tempString, vector<vector<char>>& board){
+        if(root == nullptr){
+            return;
+        }
+
+        int m = board.size();
+        int n = board[0].size();
+        
+        if(root->isWord == true){
+            res.push_back(tempString);
+            root -> isWord = false;
+        }
+
+        char tempChar = board[x][y];
+        board[x][y] = '.';
+
+        int x_dir[4] = {0,0,1,-1};
+        int y_dir[4] = {1,-1,0,0};
+
+        for(int i = 0; i <4; i++){
+            int nx = x + x_dir[i];
+            int ny = y + y_dir[i];
+
+            if(nx >=0 && nx < m && ny >=0 && ny < n && root->children[board[nx][ny]] != nullptr && board[nx][ny] != '.'){
+                dfs(nx, ny, root->children[board[nx][ny]], res, tempString + board[nx][ny], board);
+            }
+        }
+        
+        board[x][y] = tempChar;
+
+    }
+
+    vector<string> findWords(vector<vector<char>>& board,vector<string>& words) {
+        //TrieNode* root = new TrieNode();
+
+        Trie trie;
+
+        
+        for( int i = 0; i< words.size(); i++){
+            string word = words[i];
+            trie.addWord(word);
+        }
+        vector<string> res;
+
+        for(int i = 0; i < board.size(); i++){
+            for( int j = 0; j < board[0].size(); j++){
+                string temp = "";
+                temp += board[i][j];
+                dfs(i, j, trie.root->children[board[i][j]], res, temp, board);
+            }
+        }
+
+        return res;
+    }
+};
