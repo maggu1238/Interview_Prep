@@ -8,7 +8,7 @@ using namespace std;
 // Function to find all similar videos for all videos
 vector<vector<int>> findSimilarVideosForAll(int N, vector<unordered_set<int>>& videoTags) {
     unordered_map<int, unordered_set<int>> tagToVideos;  // Maps a tag to all videos that have that tag
-    vector<vector<int>> similarVideos(N);  // Store similar videos for all videos
+    vector<vector<int>> similarVideos(N);  // Store similar videos for all   videos
 
     // Build the tag-to-video map
     for (int i = 0; i < N; i++) {

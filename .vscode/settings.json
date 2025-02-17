@@ -6,6 +6,12 @@
         "chrono": "cpp",
         "limits": "cpp",
         "utility": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "xstring": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp"
     }
 }

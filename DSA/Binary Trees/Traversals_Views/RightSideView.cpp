@@ -12,6 +12,7 @@ void dfs(TreeNode<int>* root, int level, vector<int>& list){
   dfs(root ->left, level + 1, list);
   return;
 }
+
 // Function to get the right side view of a binary tree
 std::vector<int> RightSideView(TreeNode<int>* root) {
 

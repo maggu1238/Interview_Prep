@@ -115,3 +115,56 @@ int main() {
 
     return 0;
 }
+
+
+///////////////////////Sedcond approach
+
+public class Solution {
+    public static List<int[]> findMatchingRobots(char[][] array, int[] blocker) {
+        List<int[]> robots = new ArrayList<>();
+        for(int i=0; i<array.length; i++) {
+            for(int j=0; j<array[0].length; j++) {
+                if(array[i][j] == 'O') robots.add(new int[]{i,j});
+            }
+        }
+
+        List<int[]> result = new ArrayList<>();
+        int[][] dirs = new int[][]{{0,-1}, {-1,0}, {1,0}, {0,1}}; // left, top, bottom, right
+        for(int[] pos : robots) {
+            if(nearestBlockerPos(pos[0], pos[1], array, dirs[0], blocker[0]) &&
+                nearestBlockerPos(pos[0], pos[1], array, dirs[1], blocker[1]) &&
+                nearestBlockerPos(pos[0], pos[1], array, dirs[2], blocker[2]) &&
+                nearestBlockerPos(pos[0], pos[1], array, dirs[3], blocker[3])) {
+                result.add(pos.clone());
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean nearestBlockerPos(int x, int y, char[][] array, int[] dir, int val) {
+        int distance = 0;
+        while(x >= 0 && x < array.length && y >= 0 && y < array[0].length && array[x][y] != 'X') {
+            x += dir[0];
+            y += dir[1];
+            distance++;
+            if(distance > val) return false;
+        }
+        return distance == val;
+    }
+
+    public static void main(String[] args) {
+        char[][] array = new char[][]{{'O','E','E','E','X'},
+                {'E','O','X','X','X'},
+                {'E','E','E','E','E'},
+                {'X','E','O','E','E'},
+                {'X','E','X','E','X'}};
+
+        int[] blockers = new int[]{2,2,4,1};
+
+        List<int[]> result = findMatchingRobots(array, blockers);
+        for(int[] r : result) {
+            System.out.println(r[0] + "," + r[1]);
+        }
+    }
+}
