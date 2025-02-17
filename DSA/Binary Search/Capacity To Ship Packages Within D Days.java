@@ -16,6 +16,8 @@ class Solution {
             else{
                 days++;
                 tempSum = weights[i];
+
+                
             }
         }
         if(tempSum <= shipWeight)
