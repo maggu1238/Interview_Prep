@@ -1,5 +1,7 @@
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 import java.util.*;
 
 /** Represents a User in the system */
@@ -85,6 +87,7 @@ class PostService {
         tweets.put(tweetId, tweet);
         userTweets.putIfAbsent(userId, new ArrayList<>());
         userTweets.get(userId).add(tweetId);
+        likeTweetMap.putIfAbsent(tweetId, 0);
         return tweetId;
     }
 
@@ -241,7 +244,7 @@ public class Main {
         // Fetch Alice's news feed
         List<Tweet> timeline = twitterService.getUserTimeline("1");
         for (Tweet tweet : timeline) {
-            System.out.println("Tweet from " + tweet.getUserId() + ": " + tweet.getContent() + " (Likes: " + tweet.getLikeCount() + ")");
+            System.out.println("Tweet from " + tweet.getUserId() + ": " + tweet.getContent());
         }
     }
 }
