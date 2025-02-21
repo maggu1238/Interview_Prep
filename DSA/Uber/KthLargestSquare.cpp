@@ -24,6 +24,8 @@ int findPivot(vector<int> nums){
 }
 
 
+
+
 binarySearch(){
     int left = k;
 

@@ -33,14 +33,18 @@ vector<pair<int, int>> findValidRobots(vector<vector<char>>& grid, vector<int>& 
     vector<vector<int>> top(rows, vector<int>(cols, 0));
     vector<vector<int>> bottom(rows, vector<int>(cols, 0));
 
+
     // Precompute Left distances
     for (int r = 0; r < rows; r++) {
         int dist = 0;
+
+
+
         for (int c = 0; c < cols; c++) {
             if (grid[r][c] == 'X') dist = 0;
             else if (c == 0) dist = 0;  // Boundary is a blocker
             else dist++;
-            left[r][c] = dist;
+            left[r][c] = dist
         }
     }
 
