@@ -113,26 +113,23 @@ class MusicPlayer {
     }
 
     public void printMostPlayedSongs() {
-        if (songs.isEmpty()) {
+        if (maxPlays == 0) {
             System.out.println("No songs played yet.");
             return;
         }
 
-        List<List<Song>> bucket = new ArrayList<>(maxPlays + 1);
-        for (int i = 0; i <= maxPlays; i++) {
-            bucket.add(new ArrayList<>());
-        }
-
+        List<Song> mostPlayedSongs = new ArrayList<>();
         for (Song song : songs.values()) {
-            bucket.get(song.getPlayCount()).add(song);
-        }
-
-        for (int count = maxPlays; count >= 1; count--) {
-            for (Song song : bucket.get(count)) {
-                System.out.println(song.getTitle() + " - " + count + " unique listeners");
+            if (song.getPlayCount() == maxPlays) {
+                mostPlayedSongs.add(song);
             }
         }
+
+        for (Song song : mostPlayedSongs) {
+            System.out.println(song.getTitle() + " - " + maxPlays + " unique listeners");
+        }
     }
+
 
     public void starSong(int userId, int songId) {
         if (!users.containsKey(userId)) {
