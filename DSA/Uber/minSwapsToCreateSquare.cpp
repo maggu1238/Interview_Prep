@@ -1,5 +1,6 @@
 /*
-Given a n x n matrix with 0s and 1s, given the min number of swaps (not necessary to be adjacent) required to created a y x y (y<=n) matrix of 1s inside.
+Given a n x n matrix with 0s and 1s, given the min number of swaps (not necessary to be adjacent) required to created a y x y (y<=n)
+ matrix of 1s inside.
 */
 
 #include <iostream>

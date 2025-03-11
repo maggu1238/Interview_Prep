@@ -1,4 +1,5 @@
-/*Given a sorted array containing both positive and negative numbers, return an array sorted based on the square of its values, but instead of squared values, keep the original numbers.*/
+/*Given a sorted array containing both positive and negative numbers, 
+return an array sorted based on the square of its values, but instead of squared values, keep the original numbers.*/
 #include <iostream>
 #include <vector>
 #include <algorithm>

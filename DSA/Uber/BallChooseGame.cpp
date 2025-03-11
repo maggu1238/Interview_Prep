@@ -1,5 +1,8 @@
 /*
-Players a and b are playing the famous ball score game. there are some balls placed on a table with each with a value on it. game start with a coin toss. heads means a starts, else b starts. winner takes first turn. during each turn a player is allowed to pick at most k balls from table. score is sum of values of all balls taken by player. b will only pick ball whose sum of digits of ball is maximum, if theres a tie he chooses either one. a doesn't care about that he'll pick any ball. both want to maximize their score so both will play optimally. print the score both a and b will achieve.
+Players a and b are playing the famous ball score game. there are some balls placed on a table with each with a value on it. game start with a coin toss.
+ heads means a starts, else b starts. winner takes first turn. during each turn a player is allowed to pick at most k balls from table. score is sum of values of all balls taken by player.
+  b will only pick ball whose sum of digits of ball is maximum, if theres a tie he chooses either one. a doesn't care about that he'll pick any ball. both want to maximize their score so
+   both will play optimally. print the score both a and b will achieve.
 */
 
 #include <bits/stdc++.h>

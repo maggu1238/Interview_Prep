@@ -1,6 +1,7 @@
 
 /*
-Given a matrix of size n*m with tower heights as input. For each tower you are allowed to jump to other neighbour tower if height of current tower < height of neighbour tower. Find the maximum number of towers you can jump.
+Given a matrix of size n*m with tower heights as input. For each tower you are allowed to jump to other neighbour tower if height of current tower < height of neighbour tower. 
+Find the maximum number of towers you can jump.
 
 you can start from any tower in array
 */

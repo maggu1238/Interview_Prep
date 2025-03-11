@@ -1,5 +1,6 @@
 /* 
-The problem itself was about designing a data structure to represent a terrain of islands in a sea of water, where each island is denoted by a coordinate (x, y). The data structure needed to support two methods:
+The problem itself was about designing a data structure to represent a terrain of islands in a sea of water, where each island is denoted by a coordinate (x, y). 
+The data structure needed to support two methods:
 
 
 add(x, y) – Add a piece of land.

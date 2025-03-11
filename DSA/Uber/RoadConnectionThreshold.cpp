@@ -3,7 +3,8 @@
 x%z==0
 y%z==0
 z>threshold
-Make connections and later they will provide different source and target cities, tell whether a road is there or not(road can be indirect as well).
+Make connections and later they will provide different source and target cities, 
+tell whether a road is there or not(road can be indirect as well).
 */
 
 class DSU {
@@ -19,6 +20,7 @@ class DSU {
         }
     }
 
+    
     int findParent(int x){
         if( parent[x] != x){
             parent[x] = findParent(parent[x]);

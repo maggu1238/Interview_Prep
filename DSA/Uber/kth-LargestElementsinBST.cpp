@@ -3,24 +3,7 @@ public int kthLargest(TreeNode root, int k) {}
 
 
 Follow up:
-Given a list of kth values find return the number cooresponding
 
-
-public int kthLargest(TreeNode root, List k) {}
-
-
-Example:
-
-
-             10
-         /       \
-      4          20
-	/          /     \
-  2           15     40
-k = [2, 1, 30, 6]
-
-
-output: [20, 40, null, 2]
 
 */
 

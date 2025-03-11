@@ -46,12 +46,14 @@ class Excel {
 
     // Evaluate an arithmetic expression with cell references
     private int evaluateExpression(String expr) {
+
         Stack<Integer> values = new Stack<>();
         Stack<Character> ops = new Stack<>();
         Matcher matcher = Pattern.compile("([A-Z][0-9]+|[-+*/]|\\d+)").matcher(expr);
-
+        System.out.println(expr);
         while (matcher.find()) {
             String token = matcher.group();
+            System.out.println(token);
 
             if (isNumber(token)) {
                 values.push(Integer.parseInt(token));
@@ -68,6 +70,7 @@ class Excel {
                 ops.push(token.charAt(0));
             }
         }
+         System.out.println("__________________");
 
         while (!ops.isEmpty()) {
             processOperation(values, ops.pop());

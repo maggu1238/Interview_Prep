@@ -1,5 +1,6 @@
 /*
-The Shortest Bridge problem involves finding the minimum number of flips (changing 0 to 1) required to connect two islands in a binary grid.
+The Shortest Bridge problem involves finding the minimum number of flips (changing 0 to 1) 
+required to connect two islands in a binary grid.
 
 Optimized Approach (BFS + DFS)
 Find the first island using DFS and mark it with 2 while adding its boundary to a queue.
@@ -17,11 +18,19 @@ public:
     int n;
     vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
+    bool isOnBoundary(int x,int y, vector<vector<int>> grid){
+        if (r < 0 || c < 0 || r >= n || c >= n){
+            return ;
+        }
+    }    
     // DFS to find and mark the first island
     void dfs(vector<vector<int>>& grid, int r, int c, queue<pair<int, int>>& q) {
         if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != 1) return;
         grid[r][c] = 2;  // Mark as visited
-        q.push({r, c});  // Add boundary for BFS
+        if(isOnBoundary(r,c)){
+            q.push({r, c});
+        }
+          // Add boundary for BFS
         for (auto [dr, dc] : directions) 
             dfs(grid, r + dr, c + dc, q);
     }

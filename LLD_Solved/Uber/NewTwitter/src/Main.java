@@ -139,7 +139,6 @@ class PostService {
             this.tweetId = tweetId;
         }
     }
-
 }
 
 /** Generates a timeline using shared data (decoupled from PostService & UserProfileService) */

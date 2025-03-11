@@ -1,5 +1,6 @@
 /*
-Given a two dimensional array of positive integer values, find the minimum sum when you start from the top left corner traveling to the bottom right corner. You can only move in the direction of right and down.
+Given a two dimensional array of positive integer values, find the minimum sum when you start
+ from the top left corner traveling to the bottom right corner. You can only move in the direction of right and down.
 */
 
 public class MinimumPathSum {
