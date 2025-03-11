@@ -49,7 +49,8 @@ class Excel {
 
         Stack<Integer> values = new Stack<>();
         Stack<Character> ops = new Stack<>();
-        Matcher matcher = Pattern.compile("([A-Z][0-9]+|[-+*/]|\\d+)").matcher(expr);
+        Matcher matcher = Pattern.compile("((?<!\\d)-?\\d+ | [A-Z][0-9]+|[-+*/])").matcher(expr);
+
         System.out.println(expr);
         while (matcher.find()) {
             String token = matcher.group();
