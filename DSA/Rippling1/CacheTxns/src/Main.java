@@ -7,88 +7,123 @@ class Cache {
     // Start a new transaction
     public void begin() {
         transactionStack.push(new HashMap<>());
+        System.out.println("BEGIN TRANSACTION");
     }
 
     // Commit the latest transaction (merge changes into outer transaction if nested)
     public void commit() {
-        if (transactionStack.isEmpty()) return;
+        if (transactionStack.isEmpty()) {
+            System.out.println("No active transaction to commit.");
+            return;
+        }
 
         Map<String, String> lastTxn = transactionStack.pop();
         if (!transactionStack.isEmpty()) {
-            transactionStack.peek().putAll(lastTxn);
-        }
-    }
-
-    // Rollback the latest transaction (restore only modified keys)
-    public void rollback() {
-        if (transactionStack.isEmpty()) return;
-
-        Map<String, String> lastTxn = transactionStack.pop();
-        for (Map.Entry<String, String> entry : lastTxn.entrySet()) {
-            if (entry.getValue() == null) {
-                cache.remove(entry.getKey());  // Key was newly added, so remove it
-            } else {
-                cache.put(entry.getKey(), entry.getValue());  // Restore old value
+            // Merge changes into the previous transaction manually
+            Map<String, String> prevTxn = transactionStack.peek();
+            for (Map.Entry<String, String> entry : lastTxn.entrySet()) {
+                prevTxn.put(entry.getKey(), entry.getValue());
+            }
+        } else {
+            // Apply changes to the main cache
+            for (Map.Entry<String, String> entry : lastTxn.entrySet()) {
+                if (entry.getValue() == null) {
+                    cache.remove(entry.getKey());
+                } else {
+                    cache.put(entry.getKey(), entry.getValue());
+                }
             }
         }
+
+        System.out.println("COMMITTED TRANSACTION");
+    }
+
+    //  public void commit() {
+    //     if (transactionStack.isEmpty()) return;
+
+    //     Map<String, String> lastTxn = transactionStack.pop();
+    //     for (Map.Entry<String, String> entry : lastTxn.entrySet()) {
+    //         if (entry.getValue() == null) {
+    //             cache.remove(entry.getKey());  // Remove the key from the main cache
+    //         } else {
+    //             cache.put(entry.getKey(), entry.getValue());  // Apply changes
+    //         }
+    //     }
+    // }
+
+    // Rollback the latest transaction (discard changes)
+    public void rollback() {
+        if (transactionStack.isEmpty()) {
+            System.out.println("No active transaction to rollback.");
+            return;
+        }
+        transactionStack.pop(); // Simply discard the latest transaction
+        System.out.println("ROLLED BACK TRANSACTION");
     }
 
     // Add or update a key-value pair
     public void add(String key, String value) {
-        if (!transactionStack.isEmpty() && !transactionStack.peek().containsKey(key)) {
-            transactionStack.peek().put(key, cache.containsKey(key) ? cache.get(key) : null);
+        if (!transactionStack.isEmpty()) {
+            transactionStack.peek().put(key, value); // Store changes in the transaction
+        } else {
+            cache.put(key, value); // No active transaction, modify main cache
         }
-        cache.put(key, value);
+        System.out.println("SET " + key + " = " + value);
     }
 
     // Get a value by key
     public String get(String key) {
+        if (!transactionStack.isEmpty() && transactionStack.peek().containsKey(key)) {
+            return transactionStack.peek().getOrDefault(key, "Key not found");
+        }
         return cache.getOrDefault(key, "Key not found");
     }
 
     // Remove a key from the cache
     public void remove(String key) {
-        if (!transactionStack.isEmpty() && !transactionStack.peek().containsKey(key)) {
-            transactionStack.peek().put(key, cache.containsKey(key) ? cache.get(key) : null);
+        if (!transactionStack.isEmpty()) {
+            transactionStack.peek().put(key, null); // Mark as deleted in transaction
+        } else {
+            cache.remove(key);
         }
-        cache.remove(key);
+        System.out.println("REMOVED " + key);
     }
 
     // Display the current cache state
     public void display() {
-        cache.forEach((key, value) -> System.out.println(key + " : " + value));
+        Map<String, String> snapshot = new HashMap<>(cache);
+
+        // Apply transaction changes in order
+        for (Map<String, String> txn : transactionStack) {
+            for (Map.Entry<String, String> entry : txn.entrySet()) {
+                if (entry.getValue() == null) {
+                    snapshot.remove(entry.getKey()); // Simulate deletion
+                } else {
+                    snapshot.put(entry.getKey(), entry.getValue()); // Apply transaction changes
+                }
+            }
+        }
+
+        System.out.println("CURRENT CACHE STATE:");
+        snapshot.forEach((key, value) -> System.out.println(key + " : " + value));
+        System.out.println("---------------------");
     }
+
 
     public static void main(String[] args) {
         Cache myCache = new Cache();
-        myCache.add("name", "Shubham");
-        myCache.add("company", "Microsoft");
 
-        System.out.println("Before transaction:");
+        myCache.begin();  // txn1 starts
+        myCache.add("name", "Alice");  // txn1: change "name"
+
+        myCache.begin();  // txn2 starts inside txn1
+        myCache.add("city", "Seattle");  // txn2: change "city"
         myCache.display();
 
-        myCache.begin();  // Transaction 1 starts
-        myCache.add("role", "Engineer");  // New key
-        myCache.remove("company");        // Key already exists
-
-        System.out.println("After Transaction 1 changes:");
+        myCache.commit();  // txn2 commits (changes merge into txn1)
         myCache.display();
 
-        myCache.begin();  // Nested Transaction 2 starts
-        myCache.add("location", "India");  // New key
-        myCache.remove("role");            // Remove key added in Transaction 1
-
-        System.out.println("After Nested Transaction 2 changes:");
-        myCache.display();
-
-        myCache.rollback();  // Rolls back only Nested Transaction 2
-
-        System.out.println("After rolling back Nested Transaction 2:");
-        myCache.display();
-
-        myCache.commit();  // Commits Transaction 1
-
-        System.out.println("After committing Transaction 1:");
+        myCache.rollback();  // txn1 rolls back (removes both "name" & "city")
         myCache.display();
     }
 }

@@ -130,7 +130,6 @@ class MusicPlayer {
         }
     }
 
-
     public void starSong(int userId, int songId) {
         if (!users.containsKey(userId)) {
             System.out.println("User not found.");
