@@ -1,124 +1,153 @@
 import java.util.*;
-import java.util.regex.*;
 
-class Excel {
-    private static class Cell {
-        String rawValue; // Original value or formula
-        int computedValue; // Computed numeric value
+class ExcelSheet {
+    private final Map<String, String> rawValues = new HashMap<>();  // Stores raw input (numbers or formulas)
+    private final Map<String, Integer> computedValues = new HashMap<>();  // Stores computed values
+    private final Map<String, Set<String>> dependencies = new HashMap<>();  // Tracks dependent cells
 
-        Cell(String raw, int computed) {
-            this.rawValue = raw;
-            this.computedValue = computed;
-        }
-    }
-
-    private final Map<String, Cell> sheet = new HashMap<>();
-
-    // Set a value in the cell
     public void set(String cell, String value) {
-        int computedValue = evaluate(value);
-        sheet.put(cell, new Cell(value, computedValue));
+        rawValues.put(cell, value);
+        dependencies.put(cell, new HashSet<>());  // Reset dependencies
+        
+        try {
+            int computed = evaluate(value, new HashSet<>());
+            computedValues.put(cell, computed);
+            updateDependents(cell);  // Propagate changes
+        } catch (RuntimeException e) {
+            System.out.println("ERROR: Circular reference detected for " + cell);
+            rawValues.remove(cell);
+            computedValues.remove(cell);
+            dependencies.remove(cell);
+        }
     }
 
-    // Reset a cell
     public void reset(String cell) {
-        sheet.remove(cell);
+        rawValues.remove(cell);
+        computedValues.remove(cell); // Remove cached computed value
+        updateDependents(cell);
+        dependencies.remove(cell);
+
     }
 
-    // Print all cells with their raw and computed values
     public void print() {
-        for (Map.Entry<String, Cell> entry : sheet.entrySet()) {
-            System.out.println(entry.getKey() + " -> Raw: " + entry.getValue().rawValue +
-                    ", Computed: " + entry.getValue().computedValue);
+        for (String cell : rawValues.keySet()) {
+            String raw = rawValues.get(cell);
+            String computedValue = computedValues.containsKey(cell) ? String.valueOf(computedValues.get(cell)) : "ERROR";
+            System.out.println(cell + " : " + raw + " = " + computedValue);
         }
     }
 
-    // Evaluate a cell value, supporting basic arithmetic and cell references
-    private int evaluate(String value) {
-        if (!value.startsWith("=")) {
-            return Integer.parseInt(value); // Plain integer value
+    private int evaluate(String expr, Set<String> visitedCells) {
+        if (expr.startsWith("=")) {
+            return evaluateExpression(expr.substring(1), visitedCells);
         }
-
-        // Remove '=' and parse expression
-        String expr = value.substring(1);
-        return evaluateExpression(expr);
+        return parseValue(expr);
     }
 
-    // Evaluate an arithmetic expression with cell references
-    private int evaluateExpression(String expr) {
-
+    private int evaluateExpression(String expr, Set<String> visitedCells) {
         Stack<Integer> values = new Stack<>();
-        Stack<Character> ops = new Stack<>();
-        Matcher matcher = Pattern.compile("((?<!\\d)-?\\d+ | [A-Z][0-9]+|[-+*/])").matcher(expr);
+        Stack<Character> operators = new Stack<>();
 
-        System.out.println(expr);
-        while (matcher.find()) {
-            String token = matcher.group();
-            System.out.println(token);
+        int i = 0;
+        while (i < expr.length()) {
+            char ch = expr.charAt(i);
 
-            if (isNumber(token)) {
-                values.push(Integer.parseInt(token));
-            } else if (isCellReference(token)) {
-                if (sheet.containsKey(token)) {
-                    values.push(sheet.get(token).computedValue);
-                } else {
-                    throw new IllegalArgumentException("Invalid cell reference: " + token);
-                }
-            } else { // Operator
-                while (!ops.isEmpty() && precedence(ops.peek()) >= precedence(token.charAt(0))) {
-                    processOperation(values, ops.pop());
-                }
-                ops.push(token.charAt(0));
+            if (Character.isWhitespace(ch)) {
+                i++;
+                continue;
             }
-        }
-         System.out.println("__________________");
 
-        while (!ops.isEmpty()) {
-            processOperation(values, ops.pop());
+            if (Character.isDigit(ch)) {
+                int num = 0;
+                while (i < expr.length() && Character.isDigit(expr.charAt(i))) {
+                    num = num * 10 + (expr.charAt(i) - '0');
+                    i++;
+                }
+                values.push(num);
+                continue;
+            }
+
+            if (Character.isLetter(ch)) {
+                StringBuilder cellRef = new StringBuilder();
+                while (i < expr.length() && Character.isLetterOrDigit(expr.charAt(i))) {
+                    cellRef.append(expr.charAt(i));
+                    i++;
+                }
+                String referencedCell = cellRef.toString();
+
+                if (visitedCells.contains(referencedCell)) {
+                    throw new RuntimeException("Circular reference detected");
+                }
+
+                dependencies.computeIfAbsent(referencedCell, k -> new HashSet<>()).add(referencedCell);
+                visitedCells.add(referencedCell);
+                values.push(computedValues.getOrDefault(referencedCell, 0));
+                visitedCells.remove(referencedCell);
+                continue;
+            }
+
+            if ("+-*/".indexOf(ch) != -1) {
+                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(ch)) {
+                    int b = values.pop();
+                    int a = values.pop();
+                    values.push(applyOperation(a, b, operators.pop()));
+                }
+                operators.push(ch);
+            }
+            i++;
+        }
+
+        while (!operators.isEmpty()) {
+            int b = values.pop();
+            int a = values.pop();
+            values.push(applyOperation(a, b, operators.pop()));
         }
 
         return values.pop();
     }
 
-    // Helper to check if a token is a number
-    private boolean isNumber(String token) {
-        return token.matches("-?\\d+");
-    }
-
-    // Helper to check if a token is a cell reference (e.g., A1, B2)
-    private boolean isCellReference(String token) {
-        return token.matches("[A-Z][0-9]+");
-    }
-
-    // Get precedence of operators
-    private int precedence(char op) {
-        return (op == '+' || op == '-') ? 1 : (op == '*' || op == '/') ? 2 : 0;
-    }
-
-    // Apply an operation to the stack values
-    private void processOperation(Stack<Integer> values, char op) {
-        int b = values.pop();
-        int a = values.pop();
-        switch (op) {
-            case '+': values.push(a + b); break;
-            case '-': values.push(a - b); break;
-            case '*': values.push(a * b); break;
-            case '/': values.push(a / b); break;
+    private void updateDependents(String cell) {
+        for (String dependent : dependencies.getOrDefault(cell, new HashSet<>())) {
+            try {
+                int newValue = evaluate(rawValues.get(dependent), new HashSet<>());
+                computedValues.put(dependent, newValue);
+                updateDependents(dependent);
+            } catch (RuntimeException e) {
+                computedValues.put(dependent, 0); // Mark as error
+            }
         }
     }
 
+    private int precedence(char op) {
+        return (op == '+' || op == '-') ? 1 : 2;
+    }
+
+    private int applyOperation(int a, int b, char op) {
+        return switch (op) {
+            case '+' -> a + b;
+            case '-' -> a - b;
+            case '*' -> a * b;
+            case '/' -> (b != 0) ? a / b : 0;
+            default -> 0;
+        };
+    }
+
+    private int parseValue(String token) {
+        return token.chars().allMatch(Character::isDigit) ? Integer.parseInt(token) : 0;
+    }
+}
+
+public class Main {
     public static void main(String[] args) {
-        Excel excel = new Excel();
-        excel.set("A1", "10");
-        excel.set("B1", "20");
-        excel.set("C1", "=A1+B1");  // 10 + 20 = 30
-        excel.set("D1", "=C1*2");   // 30 * 2 = 60
-        excel.set("E1", "=-1+-10+2"); // -1 + (-10) + 2 = -9
-        excel.set("F1", "=D1+E1");  // 60 + (-9) = 51
+        ExcelSheet sheet = new ExcelSheet();
+        sheet.set("A1", "10");
+        sheet.set("B2", "=A1+5");
+        sheet.set("C3", "=B2*2");
+        sheet.print();
 
-        excel.print();
-
-        excel.reset("C1");
-        excel.print();
+        System.out.println("\nAdding a cycle:");
+        sheet.set("A1", "=B1");
+        sheet.set("B1", "=A1");
+        sheet.print(); // Should print ERROR for A1 and B1
     }
 }
