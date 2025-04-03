@@ -62,52 +62,6 @@ class ExcelSheet {
         }
     }
 
-    //  private boolean computeValue(String cell, Set<String> visitedCells) {
-    //     if (visitedCells.contains(cell)) {
-    //         // Cycle detected
-    //         cells.get(cell).setError();
-    //         return false;
-    //     }
-
-    //     visitedCells.add(cell);
-    //     Cell c = cells.get(cell);
-    //     if (c == null) return true; // No error, default value is 0
-
-    //     int computed = evaluateAdditionOnly(c.getRawValue(), cell, visitedCells);
-    //     c.setComputedValue(computed);
-    //     visitedCells.remove(cell);
-    //     return true;
-    // }
-
-    // private int evaluateAdditionOnly(String expr, String currentCell, Set<String> visitedCells) {
-    //     if (!expr.startsWith("=")) {
-    //         return parseValue(expr);
-    //     }
-
-    //     expr = expr.substring(1); // Remove '='
-    //     String[] tokens = expr.split("\\+");
-    //     int sum = 0;
-
-    //     for (String token : tokens) {
-    //         token = token.trim();
-    //         if (Character.isLetter(token.charAt(0))) { // It's a cell reference
-    //             if (!computeValue(token, visitedCells)) {
-    //                 cells.get(currentCell).setError();
-    //                 return Integer.MIN_VALUE;
-    //             }
-
-    //             // Register dependency
-    //             dependents.computeIfAbsent(token, k -> new HashSet<>()).add(currentCell);
-
-    //             sum += cells.getOrDefault(token, new Cell("0")).getComputedValue();
-    //         } else {
-    //             sum += parseValue(token);
-    //         }
-    //     }
-
-    //     return sum;
-    // }
-
     private boolean computeValue(String cell, Set<String> visitedCells) {
         if (visitedCells.contains(cell)) {
             // Cycle detected
